@@ -1,37 +1,110 @@
-import { createMachine } from 'xstate';
+import { assign, createMachine } from 'xstate';
+import { fetchCountries } from '../Utils/api';
 
-const bookingMachine = createMachine({
-  id: 'buy plane tickets',
-  initial: 'initial',
-  context: {
-    passengers: [],
-    selectedCountry: '',
-  },
+const fillCountries = {
+  initial: "loading",
   states: {
-    initial: {
-      on: {
-        START: 'search'
+    loading: {
+      invoke: {
+        id: 'getCountries',
+        src: () => fetchCountries,
+        onDone: {
+          target: 'success',
+          actions: assign({
+            countries: (context, event) => event.data,
+          })
+        },
+        onError: {
+          target: 'failure',
+          actions: assign({
+            error: 'Fallo el request',
+          })
+        }
       }
     },
-    search: {
+    success: {},
+    failure: {
       on: {
-        CONTINUE: 'passengers',
-        CANCEL: 'initial'
-      }
+        RETRY: { target: "loading" },
+      },
     },
-    passengers: {
-      on: {
-        DONE: 'tickets',
-        CANCEL: 'initial'
-      }
+  },
+};
+const bookingMachine = createMachine(
+  {
+    id: "buy plane tickets",
+    initial: "initial",
+    context: {
+      passengers: [],
+      selectedCountry: "",
+      countries: [],
+      error: '',
     },
-    tickets: {
-      on: {
-        FINISH: 'initial',
-        CANCEL: 'initial'
-      }
+    states: {
+      initial: {
+        on: {
+          START: {
+            target: "search",
+            actions: "cleanContext",
+          },
+        },
+      },
+      search: {
+        on: {
+          CONTINUE: {
+            target: "passengers",
+            actions: assign({
+              selectedCountry: (context, event) => event.selectedCountry,
+            }),
+          },
+          CANCEL: "initial",
+        },
+        ...fillCountries,
+      },
+      tickets: {
+        after: {
+          5000: {
+            target: 'initial',
+            actions: 'cleanContext',
+          }
+        },
+        on: {
+          FINISH: "initial",
+        },
+      },
+      passengers: {
+        on: {
+          DONE: {
+            target: "tickets",
+            cond: 'moreThanOnePassenger'
+          },
+          CANCEL: {
+            target: "initial",
+            actions: "cleanContext",
+          },
+          ADD: {
+            target: "passengers",
+            actions: assign((context, event) =>
+              context.passengers.push(event.newPassenger)
+            ),
+          },
+        },
+      },
     },
+  },
+  {
+    actions: {
+      cleanContext: assign({
+        selectedCountry: "",
+        passengers: [],
+      }),
+    },
+    guards: {
+      moreThanOnePassenger: (context) => {
+        return context.passengers.length > 0
+      }
+    }
   }
-})
+);
 
-export default bookingMachine
+export default bookingMachine;
