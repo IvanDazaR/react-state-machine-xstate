@@ -1,3 +1,5 @@
+const COUNTRIES_API = 'https://restcountries.com/v3.1/region/ame';
+
 export const fetchCountries = () =>
-  fetch('https://restcountries.com/v3.1/region/ame')
+  fetch(COUNTRIES_API)
     .then((response) => response.json());

@@ -1,5 +1,5 @@
-import { assign, createMachine } from 'xstate';
-import { fetchCountries } from '../Utils/api';
+import { createMachine, assign } from "xstate";
+import { fetchCountries } from "../Utils/api";
 
 const fillCountries = {
   initial: "loading",
@@ -30,12 +30,15 @@ const fillCountries = {
     },
   },
 };
+
 const bookingMachine = createMachine(
   {
     id: "buy plane tickets",
+    predictableActionArguments: true,
     initial: "initial",
     context: {
-      passengers: [],
+      passengers: [],       
+      emails: [],
       selectedCountry: "",
       countries: [],
       error: '',
@@ -45,7 +48,6 @@ const bookingMachine = createMachine(
         on: {
           START: {
             target: "search",
-            actions: "cleanContext",
           },
         },
       },
@@ -69,14 +71,17 @@ const bookingMachine = createMachine(
           }
         },
         on: {
-          FINISH: "initial",
+          FINISH: {
+            target: "initial",
+            actions: 'cleanContext',
+          } 
         },
       },
       passengers: {
         on: {
           DONE: {
             target: "tickets",
-            cond: 'moreThanOnePassenger'
+            cond: "moreThanOnePassenger"
           },
           CANCEL: {
             target: "initial",
@@ -84,9 +89,15 @@ const bookingMachine = createMachine(
           },
           ADD: {
             target: "passengers",
-            actions: assign((context, event) =>
+            // actions: 'addPassengers'
+            actions: assign((context, event) => {
               context.passengers.push(event.newPassenger)
-            ),
+              context.emails.push(event.newEmailPassenger)
+            }),
+            // actions: assign({
+            //   passengers: (context, event) => event.newPassenger,
+            //   emails: (context,event) => event.newEmailPassenger
+            // }),
           },
         },
       },
@@ -94,16 +105,19 @@ const bookingMachine = createMachine(
   },
   {
     actions: {
-      cleanContext: assign({
-        selectedCountry: "",
-        passengers: [],
+      cleanContext: assign((context) => {
+        context.passengers = []
+        context.emails = []
+        context.selectedCountry = ""
+        context.countries = []
+        context.error = ''
       }),
     },
     guards: {
       moreThanOnePassenger: (context) => {
-        return context.passengers.length > 0
+        return context.passengers.length > 0;
       }
-    }
+    },
   }
 );
 

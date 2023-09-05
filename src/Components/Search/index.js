@@ -20,7 +20,9 @@ export const Search = ({ state, send }) => {
         <option value="" disabled defaultValue>Escoge un país</option>
         {options.map((option) => <option value={option.name.common} key={option.name.common}>{option.name.common}</option>)}
       </select>
+      {flight &&
       <button onClick={goToPassengers} disabled={flight === ''} className='ml-auto bg-[#4F54A7] py-2 px-4 text-white font-bold cursor-pointer hover:bg-[#293684] rounded-lg'>Continue</button>
+      }
     </div>
   );
 }; 

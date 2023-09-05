@@ -2,10 +2,12 @@ import React from "react";
 
 export const Nav = ({ state, send }) => {
     const goToWelcome = () => {
-        send('CANCEL', {
-            passengers: [],
-            selectedCountry: '',
-        })
+        send('CANCEL'
+        // {
+        //     selectedCountry: '',
+        //     passengers: [],
+        // }
+        )
     }
     return (
         <nav className='flex justify-between w-[470px]  bg-white/80 p-4 rounded-t-xl'>
