@@ -1,4 +1,5 @@
 {
+  "homepage": "https://IvanDazaR.github.io/react-state-machine",
   "name": "react-state-machine",
   "version": "0.1.0",
   "private": true,
@@ -38,6 +39,7 @@
     ]
   },
   "devDependencies": {
+    "gh-pages": "^6.0.0",
     "tailwindcss": "^3.3.3"
   }
 }
