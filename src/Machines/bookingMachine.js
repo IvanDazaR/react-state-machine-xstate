@@ -17,7 +17,7 @@ const fillCountries = {
         onError: {
           target: 'failure',
           actions: assign({
-            error: 'Fallo el request',
+            error: 'The request failed',
           })
         }
       }
@@ -61,7 +61,7 @@ const bookingMachine = createMachine(
           },
           CANCEL: "initial",
         },
-        ...fillCountries,
+        ...fillCountries, // A child machine
       },
       tickets: {
         after: {

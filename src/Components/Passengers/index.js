@@ -22,12 +22,12 @@ export const Passengers = ({ state, send }) => {
     setName('');
     setEmail('');
   }
-  const { passengers } = state.context;
+  const { passengers, emails } = state.context;
   
   return (
     <form onSubmit={submit} className='flex flex-col justify-center items-center px-2'>
       <p className='text-xl'>Add the people who are going to fly ✈️</p>
-      {passengers.map((person, idx) => <p className='text-base my-1 w-full text-left' key={ `person-${idx}`}> {person} </p> )}
+      {passengers.map((person, idx) => <p className='text-base my-1 w-full text-left' key={ `person-${idx}`}>{person} - {emails[idx]} </p> )}
       <input 
         className='text-base my-4 rounded-lg p-2 w-full box-border'
         id="name" 
