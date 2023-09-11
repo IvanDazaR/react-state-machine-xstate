@@ -15,4 +15,4 @@ Visit -> [State Machine with XState](https://ivandazar.github.io/react-state-mac
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Project status
-This project is in construction. This is the second version of the E-commerce project.
+This project is finished
